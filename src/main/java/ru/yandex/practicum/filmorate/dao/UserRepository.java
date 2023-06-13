@@ -35,7 +35,7 @@ public class UserRepository {
             user.setName(user.getLogin());
             log.debug("Для пользователя с логином {} установлено новое имя {}", user.getLogin(), user.getName());
         }
-        log.debug("Новые данные: {} {} {}", user.getId(), user.getName(), user.getLogin());
+        log.debug("Новые данные: id: {}, name: {}, login: {}", user.getId(), user.getName(), user.getLogin());
         users.put(user.getId(), user);
     }
 }
