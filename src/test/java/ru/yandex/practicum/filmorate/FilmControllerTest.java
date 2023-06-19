@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,10 +12,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Validated
 public class FilmControllerTest {
-    FilmController filmController;
-    Film film;
+    private FilmController filmController;
+    private Film film;
     private static Validator validator;
 
     static {
@@ -39,7 +37,7 @@ public class FilmControllerTest {
         film.setReleaseDate(LocalDate.now().minusYears(300));
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         if (violations.isEmpty()) {
-            filmController.saveFilm(film);
+            filmController.save(film);
         }
         assertEquals(1, violations.size(), "поле пустое");
         assertEquals(0, filmController.getFilms().size(), " ");
@@ -50,7 +48,7 @@ public class FilmControllerTest {
         film.setDescription("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         if (violations.isEmpty()) {
-            filmController.saveFilm(film);
+            filmController.save(film);
         }
         assertEquals(0, filmController.getFilms().size(), " ");
     }
@@ -58,7 +56,7 @@ public class FilmControllerTest {
     @Test
     void updateUnlimitReleasedFilm_shouldShowErrorMessage() throws ValidationException {
         film.setReleaseDate(LocalDate.now().minusYears(300));
-        filmController.saveFilm(film);
+        filmController.save(film);
     }
 }
 

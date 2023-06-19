@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
     private static Validator validator;
-    User user;
+    private User user;
 
     static {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -69,7 +69,18 @@ public class UserTest {
 
     @Test
     void validateLoginEmpty() {
-        user.setLogin("");
+        user = new User();
+        user.setName("aa");
+        user.setEmail("aa@ya.ru");
+        user.setBirthday(LocalDate.now().minusYears(20));
+        ;
+        Set<ConstraintViolation<User>> violations1 = validator.validate(user);
+        assertEquals(1, violations1.size(), "поле не пустое");
+    }
+
+    @Test
+    void validateLoginNotCorrect() {
+        user.setLogin("a a");
         Set<ConstraintViolation<User>> violations1 = validator.validate(user);
         assertEquals(1, violations1.size(), "поле не пустое");
     }

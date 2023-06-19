@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FilmTest {
     private static Validator validator;
-    Film film;
+    private Film film;
 
     static {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();

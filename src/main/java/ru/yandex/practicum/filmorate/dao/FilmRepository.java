@@ -5,14 +5,22 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FilmRepository {
-    public Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
+
+    public List<Film> getAll() {
+        log.debug("Текущее количество фильмов: {}", films.size());
+        return films.values().parallelStream().collect(Collectors.toList());
+    }
+
     private int generatorId = 0;
 
-    public int generateId() {
+    private int generateId() {
         return ++generatorId;
     }
 

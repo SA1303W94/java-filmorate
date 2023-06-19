@@ -17,8 +17,9 @@ public class User {
     @NotBlank(message = "Значение пустое или null")
     private String email;
     @NotBlank(message = "Значение пустое или null")
+    @Pattern(regexp = "\\S+", message = "Значение содержит пробелы")
     private String login;
     @NotNull
-    @Past(message = "Значение не наступило")
+    @PastOrPresent(message = "Значение не наступило")
     private LocalDate birthday;
 }

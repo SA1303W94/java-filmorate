@@ -16,8 +16,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserControllerTest {
-    UserController userController;
-    User user;
+    private UserController userController;
+    private User user;
     private static Validator validator;
 
     static {
@@ -38,28 +38,28 @@ public class UserControllerTest {
     @Test
     void createEmptyName() throws ValidationException {
         user.setName("");
-        userController.saveUser(user);
+        userController.save(user);
         assertEquals(user.getLogin(), user.getName());
-        assertEquals(user.getLogin(), userController.getUsers().get(0).getName());
+        assertEquals(user.getLogin(), userController.getAll().get(0).getName());
     }
 
     @Test
     void updateUserNameEmpty() throws ValidationException {
-        userController.saveUser(user);
+        userController.save(user);
         user.setName("");
         user.setLogin("bb");
         Set<ConstraintViolation<User>> violations2 = validator.validate(user);
-        if (!violations2.isEmpty()) {
+        if (violations2.isEmpty()) {
             userController.update(user);
         }
         assertEquals(user.getLogin(), user.getName());
-        assertEquals(user.getLogin(), userController.getUsers().get(0).getName());//из листа
+        assertEquals(user.getLogin(), userController.getAll().get(0).getName(), "из листа");
     }
 
     @Test
     void createEmptyLogin() throws ValidationException {
         user.setLogin("");
-        userController.saveUser(user);
-        assertEquals(user.getLogin(), userController.getUsers().get(0).getLogin(), "rep");
+        userController.save(user);
+        assertEquals(user.getLogin(), userController.getAll().get(0).getLogin(), "rep");
     }
 }
