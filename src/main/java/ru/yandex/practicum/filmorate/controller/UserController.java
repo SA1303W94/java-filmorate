@@ -1,41 +1,42 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
 
-@RestController
-@RequestMapping
 @Slf4j
-public class UserController {
-    private final UserRepository userRepository = new UserRepository();
+@RestController
+@RequestMapping("/users")
+public class UserController extends Controller<User> {
+    private final UserService userService;
 
-    @GetMapping("/users")
-    public List<User> getAll() { //    получение списка всех пользователей.
-        log.debug("получение списка");
-        return userRepository.getAll();
+    @Autowired
+    public UserController(UserService userService) {
+        super(userService);
+        this.userService = userService;
     }
 
-    @PostMapping(value = "/users") //    создание пользователя;
-    @ResponseStatus(HttpStatus.CREATED)
-    public User save(@Valid @RequestBody User user) throws ValidationException {
-        log.info("Create User: {} - Started", user);
-        userRepository.save(user);
-        log.info("Create User: {} - Finished", user);
-        return user;
+    @PutMapping("/{id}/friends/{friendId}") // добавление в друзья.
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
     }
 
-    @PutMapping(value = "/users") //    обновление пользователя;
-    public User update(@Valid @RequestBody User user) throws ValidationException {
-        log.info("Update User: {} - Started", user);
-        userRepository.save(user);
-        log.info("Update User: {} - Finished", user);
-        return user;
+    @DeleteMapping("/{id}/friends/{friendId}") // удаление из друзей.
+    public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends") // возвращаем список пользователей, являющихся его друзьями.
+    public List<User> getFriends(@PathVariable Integer id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}") //список друзей, общих с другим пользователем.
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }

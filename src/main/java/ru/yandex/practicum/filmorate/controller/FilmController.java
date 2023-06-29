@@ -1,41 +1,37 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.FilmRepository;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/films")
 @Slf4j
-public class FilmController {
-    private final FilmRepository filmRepository = new FilmRepository();
+public class FilmController extends Controller<Film> {
+    private final FilmService filmService;
 
-    @GetMapping("/films") //    получение всех фильмов
-    public List<Film> getFilms() {
-        log.debug("получение всех фильмов");
-        return filmRepository.getAll(); // сделала так, чтобы  repository был private, не поняла, как сделать по-другому
+    @Autowired
+    public FilmController(FilmService filmService) {
+        super(filmService);
+        this.filmService = filmService;
     }
 
-    @PostMapping(value = "/films") //    добавление фильма;
-    @ResponseStatus(HttpStatus.CREATED)
-    public Film save(@Valid @RequestBody Film film) throws ValidationException {
-        log.info("Create Film: {} - Started", film);
-        filmRepository.save(film);
-        log.info("Create Film: {} - Finished", film);
-        return film;
+    @PutMapping("/{id}/like/{userId}") //пользователь ставит лайк фильму.
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
+        filmService.addLike(id, userId);
     }
 
-    @PutMapping(value = "/films") //    обновление пользователя;
-    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
-        log.info("Update Film: {} - Started", film);
-        filmRepository.save(film);
-        log.info("Update Film: {} - Finished", film);
-        return film;
+    @DeleteMapping("/{id}/like/{userId}") //пользователь удаляет лайк.
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular") // список из первых count (10 по умолчанию) фильмов по количеству лайков.
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count) {
+        return filmService.getPopular(count);
     }
 }

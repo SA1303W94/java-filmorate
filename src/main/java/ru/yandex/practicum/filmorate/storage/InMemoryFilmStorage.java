@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.HashMap;
@@ -10,7 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class FilmRepository {
+@Component
+public class InMemoryFilmStorage implements InMemoryStorage<Film> {
     private final Map<Integer, Film> films = new HashMap<>();
 
     public List<Film> getAll() {
@@ -24,15 +26,32 @@ public class FilmRepository {
         return ++generatorId;
     }
 
-    public void save(Film film) throws ValidationException {
+    @Override
+    public Film save(Film film) {
         if (!films.containsKey(film.getId())) {
             if (film.getId() > 0) {
-                throw new ValidationException("Object is not in list");
+                throw new NotFoundException("Object is not in list");
             }
             film.setId(generateId());
             log.debug("Добавлен новый id: {}", film.getId());
         }
         log.debug("Новые данные: {} {} {}", film.getId(), film.getName(), film.getReleaseDate());
         films.put(film.getId(), film);
+        return film;
+    }
+
+    @Override
+    public Film getById(int id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Object is not in list");
+        }
+        return films.get(id);
+    }
+
+    @Override
+    public void delete(int id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Object is not in list");
+        }
     }
 }
