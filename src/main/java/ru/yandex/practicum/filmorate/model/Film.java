@@ -5,13 +5,15 @@ import ru.yandex.practicum.filmorate.validator.RealiseDateContraint;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Film {
+public class Film extends Model {
     private int id;
     @NotBlank(message = "Значение пустое или null")
     private String name;
@@ -21,4 +23,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "должно быть положительным")
     private int duration;
+    private Set<Integer> likes = new HashSet<>();
 }

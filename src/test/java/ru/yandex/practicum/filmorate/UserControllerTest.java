@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class UserControllerTest {
     private UserController userController;
@@ -25,9 +28,12 @@ public class UserControllerTest {
         validator = validatorFactory.usingContext().getValidator();
     }
 
+
     @BeforeEach
     public void start() {
-        userController = new UserController();
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        UserService userService = new UserService(userStorage);
+        userController = new UserController(userService);
         user = new User();
         user.setName("aa");
         user.setBirthday(LocalDate.now());
@@ -38,14 +44,17 @@ public class UserControllerTest {
     @Test
     void createEmptyName() throws ValidationException {
         user.setName("");
-        userController.save(user);
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        if (violations.isEmpty()) {
+            userController.update(user);
+        }
         assertEquals(user.getLogin(), user.getName());
-        assertEquals(user.getLogin(), userController.getAll().get(0).getName());
+        assertEquals(user.getLogin(), userController.getById(1).getName());
     }
 
     @Test
     void updateUserNameEmpty() throws ValidationException {
-        userController.save(user);
+        userController.update(user);
         user.setName("");
         user.setLogin("bb");
         Set<ConstraintViolation<User>> violations2 = validator.validate(user);
@@ -53,13 +62,16 @@ public class UserControllerTest {
             userController.update(user);
         }
         assertEquals(user.getLogin(), user.getName());
-        assertEquals(user.getLogin(), userController.getAll().get(0).getName(), "из листа");
+        assertEquals(user.getLogin(), userController.getById(1).getName());
     }
 
     @Test
     void createEmptyLogin() throws ValidationException {
         user.setLogin("");
-        userController.save(user);
-        assertEquals(user.getLogin(), userController.getAll().get(0).getLogin(), "rep");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        if (violations.isEmpty()) {
+            userController.create(user);
+        }
+        assertEquals(0, userController.getAll().size());
     }
 }
