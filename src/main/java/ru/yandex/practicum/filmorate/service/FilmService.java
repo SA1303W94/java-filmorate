@@ -23,18 +23,24 @@ public class FilmService extends AbstractService<Film> {
         this.userStorage = userStorage;
     }
 
-    public void addLike(int filmId, int userId) { //добавление лайка
+    private static final Comparator<Film> COMPARATOR =
+            Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder());
+
+    private void isCommonEmpty(int filmId, int userId) {
+
         if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
             throw new NotFoundException("Object is not in list");
         }
+    }
+
+    public void addLike(int filmId, int userId) { //добавление лайка
+        isCommonEmpty(filmId, userId);
         getById(filmId).getLikes().add(userId);
         log.info("Like successfully added");
     }
 
     public void removeLike(int filmId, int userId) { // удаление лайка
-        if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
-            throw new NotFoundException("Object is not in list");
-        }
+        isCommonEmpty(filmId, userId);
         getById(filmId).getLikes().remove(userId);
         log.info("Like successfully removed");
     }
@@ -43,7 +49,7 @@ public class FilmService extends AbstractService<Film> {
         log.info("Requested a list of popular movies");
         return storage.getAll()
                 .stream()
-                .sorted(Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder()))
+                .sorted(COMPARATOR)
                 .limit(count)
                 .collect(Collectors.toList());
     }

@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User extends Model {
     private int id;
     private String name;
     @Email

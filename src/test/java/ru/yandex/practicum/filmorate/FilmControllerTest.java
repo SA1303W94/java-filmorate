@@ -71,7 +71,6 @@ public class FilmControllerTest {
         if (violations.isEmpty()) {
             filmController.create(film);
         }
-
         assertEquals(0, filmController.getAll().size(), "Дата релиза раньше возможной");
     }
 }

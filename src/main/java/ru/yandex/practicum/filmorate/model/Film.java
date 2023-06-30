@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Film {
+public class Film extends Model {
     private int id;
     @NotBlank(message = "Значение пустое или null")
     private String name;

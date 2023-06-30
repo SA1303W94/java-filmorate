@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Model;
 import ru.yandex.practicum.filmorate.storage.InMemoryStorage;
 
 import java.util.Collection;
 
 @Slf4j
 @Service
-public abstract class AbstractService<T> {
-    protected final InMemoryStorage<T> storage;
+public abstract class AbstractService<T extends Model> {
+    protected InMemoryStorage<T> storage;
 
     protected AbstractService(InMemoryStorage<T> storage) {
         this.storage = storage;
@@ -30,13 +31,13 @@ public abstract class AbstractService<T> {
         return storage.save(obj);
     }
 
-    public void delete(int id) {
-        log.info("Deleted object with id: {}", id);
-        storage.delete(id);
-    }
-
     public T getById(int id) {
         log.info("Requested object with id: " + id);
         return storage.getById(id);
+    }
+
+    public void delete(int id) {
+        log.info("Deleted object with id: {}", id);
+        storage.delete(id);
     }
 }

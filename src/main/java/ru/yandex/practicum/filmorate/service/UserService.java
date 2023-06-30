@@ -13,24 +13,28 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserService extends AbstractService<User> {
+    private static final Comparator<User> USER_ID_COMPARATOR = Comparator.comparingInt(User::getId);
+
     @Autowired
-    public UserService(InMemoryUserStorage storage) {
-        super(storage);
+    public UserService(InMemoryUserStorage userStorage) {
+        super(userStorage);
+    }
+
+    private void isCommonEmpty(int userId, int friendId) {
+        if (storage.getById(friendId) == null || storage.getById(userId) == null) {
+            throw new NotFoundException("Object is not in list");
+        }
     }
 
     public void addFriend(int userId, int friendId) { //добавление в друзья,
-        if (storage.getById(userId) == null || storage.getById(friendId) == null) {
-            throw new NotFoundException("Object is not in list");
-        }
+        isCommonEmpty(userId, friendId);
         storage.getById(userId).getFriends().add(friendId);
         storage.getById(friendId).getFriends().add(userId);
         log.info("Friend successfully added");
     }
 
     public void removeFriend(int userId, int friendId) { //удаление из друзей
-        if (storage.getById(userId) == null || storage.getById(friendId) == null) {
-            throw new NotFoundException("Object is not in list");
-        }
+        isCommonEmpty(userId, friendId);
         getById(userId).getFriends().remove(friendId);
         getById(friendId).getFriends().remove(userId);
         log.info("Friend successfully removed");
@@ -45,22 +49,18 @@ public class UserService extends AbstractService<User> {
         return user.getFriends()
                 .stream()
                 .map(storage::getById)
-                .sorted(Comparator.comparingInt(User::getId))
+                .sorted(USER_ID_COMPARATOR)
                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(int firstId, int second2Id) { //вывод списка общих друзей
-        if (storage.getById(firstId) == null ||
-                storage.getById(second2Id) == null) {
-            throw new NotFoundException("Object is not in list");
-        }
-        List<User> firstFriends = getFriends(firstId);
-        List<User> secondFriends = getFriends(second2Id);
+        isCommonEmpty(firstId, second2Id);
         log.info("Common friends of users with id " + firstId + " и " + second2Id);
-        return firstFriends
+        return storage.getById(firstId).getFriends()
                 .stream()
-                .filter(secondFriends::contains)
-                .sorted(Comparator.comparingInt(User::getId))
+                .filter(storage.getById(second2Id).getFriends()::contains)
+                .map(storage::getById)
+                .sorted(USER_ID_COMPARATOR)
                 .collect(Collectors.toList());
     }
 }
