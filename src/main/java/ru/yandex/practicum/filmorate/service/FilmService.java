@@ -5,28 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService extends AbstractService<Film> {
-    private final InMemoryUserStorage userStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         super(filmStorage);
+        this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
     private static final Comparator<Film> COMPARATOR =
             Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder());
 
-    private void isCommonEmpty(int filmId, int userId) {
+    private void isEmpty(int filmId, int userId) {
 
         if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
             throw new NotFoundException("Object is not in list");
@@ -34,23 +36,20 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public void addLike(int filmId, int userId) { //добавление лайка
-        isCommonEmpty(filmId, userId);
-        getById(filmId).getLikes().add(userId);
+        isEmpty(filmId, userId);
+        filmStorage.addLike(filmId, userId);
         log.info("Like successfully added");
     }
 
     public void removeLike(int filmId, int userId) { // удаление лайка
-        isCommonEmpty(filmId, userId);
-        getById(filmId).getLikes().remove(userId);
+        isEmpty(filmId, userId);
+        filmStorage.removeLike(filmId, userId);
         log.info("Like successfully removed");
     }
 
     public List<Film> getPopular(int count) { // вывод 10 наиболее популярных фильмов по количеству лайков
+        List<Film> popularFilms = new ArrayList<>(filmStorage.getPopular(count));
         log.info("Requested a list of popular movies");
-        return storage.getAll()
-                .stream()
-                .sorted(COMPARATOR)
-                .limit(count)
-                .collect(Collectors.toList());
+        return popularFilms;
     }
 }

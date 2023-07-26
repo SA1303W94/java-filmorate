@@ -23,12 +23,12 @@ public abstract class AbstractService<T extends Model> {
 
     public T create(T obj) {
         log.info("Object successfully added: " + obj);
-        return storage.save(obj);
+        return storage.create(obj);
     }
 
     public T update(T obj) {
         log.info("Object successfully added: " + obj);
-        return storage.save(obj);
+        return storage.update(obj);
     }
 
     public T getById(int id) {
