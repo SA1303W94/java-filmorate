@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,11 +24,7 @@ public class FilmService extends AbstractService<Film> {
         this.userStorage = userStorage;
     }
 
-    private static final Comparator<Film> COMPARATOR =
-            Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder());
-
     private void isEmpty(int filmId, int userId) {
-
         if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
             throw new NotFoundException("Object is not in list");
         }

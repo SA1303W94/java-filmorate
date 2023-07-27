@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
-public interface UserStorage extends InMemoryStorage<User> {
+public interface UserStorage extends Storage<User> {
     void addFriend(int userID, int friendId);
 
     void removeFriend(int userID, int friendId);
