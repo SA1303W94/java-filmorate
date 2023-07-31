@@ -25,7 +25,7 @@ public class FilmTest {
 
     @BeforeEach
     void createFilm() {
-        film = new Film(1, "aa", "aa", LocalDate.now(), 10, null);
+        film = new Film(1, "aa", "aa", LocalDate.now(), 10, null,null);
     }
 
     @Test

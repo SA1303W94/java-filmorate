@@ -4,10 +4,12 @@ import ru.yandex.practicum.filmorate.model.Model;
 
 import java.util.List;
 
-public interface InMemoryStorage<T extends Model> {
+public interface Storage<T extends Model> {
     List<T> getAll();
 
-    T save(T obj);
+    T create(T obj);
+
+    T update(T obj);
 
     T getById(int id);
 

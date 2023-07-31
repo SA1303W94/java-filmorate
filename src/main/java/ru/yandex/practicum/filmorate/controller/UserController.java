@@ -24,28 +24,33 @@ public class UserController extends Controller<User> {
 
     @GetMapping
     public Collection<User> getAll() {
+        log.debug("получение всех пользователей");
         return userService.getAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
+        log.info("Создание пользователя: {} - Started", user);
         userService.create(user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
+        log.info("Обновление пользователя: {} - Started", user);
         userService.update(user);
         return user;
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable int userId) {
+        log.info("Удаление пользователя: {} - Started", userId);
         userService.delete(userId);
     }
 
     @GetMapping("/{id}")
     public User getById(@PathVariable int id) {
+        log.info("Поиск пользователя по id: {} - Started", id);
         return userService.getById(id);
     }
 

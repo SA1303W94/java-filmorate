@@ -4,8 +4,6 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Builder
 @Getter
@@ -24,5 +22,4 @@ public class User extends Model {
     @NotNull
     @PastOrPresent(message = "Значение не наступило")
     private LocalDate birthday;
-    private final Set<Integer> friends = new HashSet<>();
 }

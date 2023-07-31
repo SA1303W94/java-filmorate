@@ -3,16 +3,16 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Model;
-import ru.yandex.practicum.filmorate.storage.InMemoryStorage;
+import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.Collection;
 
 @Slf4j
 @Service
 public abstract class AbstractService<T extends Model> {
-    protected InMemoryStorage<T> storage;
+    protected Storage<T> storage;
 
-    protected AbstractService(InMemoryStorage<T> storage) {
+    protected AbstractService(Storage<T> storage) {
         this.storage = storage;
     }
 
@@ -23,12 +23,12 @@ public abstract class AbstractService<T extends Model> {
 
     public T create(T obj) {
         log.info("Object successfully added: " + obj);
-        return storage.save(obj);
+        return storage.create(obj);
     }
 
     public T update(T obj) {
         log.info("Object successfully added: " + obj);
-        return storage.save(obj);
+        return storage.update(obj);
     }
 
     public T getById(int id) {
